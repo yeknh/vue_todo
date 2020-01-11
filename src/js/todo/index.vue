@@ -6,7 +6,10 @@
       </header>
 
       <main class="main">
-        <form class="register" @submit.prevent="addTodo">
+        <form 
+          class="register" 
+          @submit.prevent="targetTodo.id ? editTodo() : addTodo()"
+        >
           <div class="register__input">
             <p class="register__input__title">やることのタイトル</p>
             <input
@@ -29,7 +32,12 @@
           </div>
           <div class="register__submit">
             <button class="register__submit__btn" type="submit" name="button">
-              登録する
+              <template v-if="targetTodo.id">
+                <span>変更する</span>
+              </template>
+              <template v-else>
+                <span>登録する</span>
+              </template>
             </button>
           </div>
         </form>
@@ -51,7 +59,7 @@
                     <button 
                       class="todos__completed__btn" 
                       type="button"
-                      @click="changeCompleted(todo.id)"
+                      @click="changeCompleted(todo)"
                     >
                       <template v-if="todo.completed">
                         <span>完了</span>
@@ -66,8 +74,20 @@
                     <p class="todos__desc__detail">{{ todo.detail }}</p>
                   </div>
                   <div class="todos__btn">
-                    <button class="todos__btn__edit" type="button">編集</button>
-                    <button class="todos__btn__delete" type="button">削除</button>
+                    <button 
+                      class="todos__btn__edit" 
+                      type="button"
+                      @click="showEditor(todo)"
+                    >
+                      編集
+                    </button>
+                    <button 
+                      class="todos__btn__delete" 
+                      type="button"
+                      @click="deleteTodo(todo.id)"
+                    >
+                      削除
+                    </button>
                   </div>
                 </div>
               </li>
@@ -116,6 +136,24 @@ export default {
     });
   },
   methods: {
+    initTargetTodo() {
+      return {
+        id: null,
+        title: '',
+        detail: '',
+        completed: false,
+      };
+    },
+    hideError() {
+      this.errorMessage = '';
+    },
+    showError(err) {
+      if (err.response) {
+        this.errorMessage = err.Message.data.message;
+      } else {
+        this.errorMessage = 'ネットに接続がされていない、もしくはサーバーとの接続がされていません。ご確認ください。'
+      }
+    },
     addTodo() {
       // console.log(Object.assign({}, this.targetTodo));
       const postTodo = Object.assign({}, {
@@ -124,15 +162,11 @@ export default {
       });
       axios.post('http://localhost:3000/api/todos/', postTodo).then(({ data }) => {
         this.todos.unshift(data);
-        this.targetTodo = Object.assign({}, this.targetTodo, { title: '', detail: ''});
-        this.errorMessage = '';
+        this.targetTodo = this.initTargetTodo();
+        this.hideError();
       }).catch((err) => {
         // console.log(err.response);
-        if (err.response) {
-          this.errorMessage = err.response.data.message;
-        } else {
-          this.errorMessage = 'ネットに接続がされていない、もしくはサーバーとの接続がされていません。ご確認ください。';
-        }
+        this.showEroor(err);
       });
     },
     changeCompleted(todo) {
@@ -145,13 +179,46 @@ export default {
           if (todoItem.id === targetTodo.id) return data;
           return todoItem;
         });
-        this.errorMessage = '';
+        this.hideError();
       }).catch((err) => {
-        if (err.response) {
-          this.errorMessage = err.response.data.message;
-        } else {
-          this.errorMessage = 'ネットに接続がされていない、もしくはサーバーとの接続がされていません。ご確認ください。';
-        }
+        this.showError(err);
+      });
+    },
+    showEditor(todo) {
+      this.targetTodo = Object.assign({}, todo);
+    },
+    editTodo() {
+      // console.log(Object.assign({}, this.targetTodo));
+      const targetTodo = this.todos.find(todo => todo.id === this.targetTodo.id);
+      if (
+        targetTodo.title === this.targetTodo.title
+        && targetTodo.detail === this.targetTodo.detail
+      ) {
+        this.targetTodo = this.initTargetTodo();
+        return;
+      }
+      
+      axios.patch(`http://localhost:3000/api/todos/${this.targetTodo.id}`, {
+        title: this.targetTodo.title,
+        detail: this.targetTodo.detail,
+      }).then(({ data }) => {
+        this.todos = this.todos.map((todo) => {
+          if (todo.id === this.targetTodo.id) return data;
+          return todo;
+        });
+        this.targetTodo = this.initTargetTodo();
+        this.hideError();
+      }).catch((err) => {
+        this.showError(err);
+      });
+    },
+    deleteTodo(id) {
+      this.targetTodo = this.initTargetTodo();
+      axios.delete(`http://localhost:3000/api/todos/${id}`).then(({ data }) => {
+        this.todos = data.todos.reverse();
+        this.hideError();
+      }).catch((err) => {
+        this.showError(err);
       });
     },
   },

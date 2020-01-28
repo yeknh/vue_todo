@@ -170,6 +170,7 @@ export default {
       });
     },
     changeCompleted(todo) {
+      this.targetTodo = this.initTargetTodo();
       // console.log(Object.assign({}, todo));
       const targetTodo = Object.assign({}, todo);
       axios.patch(`http://localhost:3000/api/todos/${targetTodo.id}`,{

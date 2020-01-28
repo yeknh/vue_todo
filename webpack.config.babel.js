@@ -8,16 +8,16 @@ console.log('nodeEnv ==> ', nodeEnv);
 console.log('isDev ==> ', isDev);
 console.log(path.resolve(__dirname, 'src/js/components'));
 
-const src = path.resolve(__dirname, './src');
+const src = path.resolve(__dirname, './src'); //_dienameで今いるファイルまでの絶対パスをとる
 const dist = path.resolve(__dirname, './public');
 
 const config = {
   mode: nodeEnv,
   devtool: isDev ? 'source-map' : 'eval',
   resolve: {
-    extensions: ['.vue', '.js', '.json'],
+    extensions: ['.vue', '.js', '.json'], //importするときにこの中の拡張子は省略可
     alias: {
-      TodoDir: `${src}/js/todo`,
+      TodoDir: `${src}/js/todo`, //テンプレートリテラル
       TodoRouterDir: `${src}/js/todoRouter`,
       TodoVuexDir: `${src}/js/todoVuex`,
       VuexSample: `${src}/js/todoVuex_sample`,
@@ -32,7 +32,7 @@ const config = {
     hot: true,
     port: 8080,
     contentBase: dist,
-    // historyApiFallback: true,
+    historyApiFallback: true,
   },
   entry: {
     index: `${src}/js/index.js`

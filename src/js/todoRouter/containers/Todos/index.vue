@@ -1,5 +1,5 @@
 <template lang="html">
-  <app-wrapper :todos="todos">
+  <app-wrapper :todos="todos">　<!--指定したコンポーネントの使用-->
     <app-navi />
     <app-register
       v-if="todoFilter !== 'completedTodos'"
@@ -50,7 +50,7 @@ import Register from 'TodoRouterDir/components/Register';
 import List from 'TodoRouterDir/components/List';
 
 export default {
-  components: {
+  components: {　//コンポーネントとして使うための指定
     appWrapper: Wrapper,
     appNavi: Navi,
     appErrorMessage: ErrorMessage,

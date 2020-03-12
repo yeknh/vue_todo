@@ -15,8 +15,8 @@ const store = new Vuex.Store({
       detail: '',
       completed: '',
     },
-    errorMessage: 'エラーが起きました。',
-    emptyMessage: 'やることリストは空です。',
+    errorMessage: '',
+    emptyMessage: '',
   },
   getters: {
     completedTodos: (state) => state.todos.filter((todo) => todo.completed),
@@ -29,12 +29,13 @@ const store = new Vuex.Store({
       state.todoFilter = routeName;
     },
     setEmptyMessage(state, routeName) {
+      console.log(routeName);
       if (routeName === 'completedTodos') {
-        let emptyMessage = '完了済みのやることリストはありません。';
+        state.emptyMessage = '完了済みのやることリストはありません。';
       } else if (routeName === 'incompleteTodos') {
-        let emptyMessage = '未完了のやることリストはありません。';
+        state.emptyMessage = '未完了のやることリストはありません。';
       } else {
-        let emptyMessage = 'やることリストには何も登録されていません。';
+        state.emptyMessage = 'やることリストには何も登録されていません。';
       }
     },
     initTargetTodo(state) {
@@ -144,10 +145,15 @@ const store = new Vuex.Store({
       commit('initTargetTodo');
     },
     deleteTodo({ commit }, todoId) {
+      console.log(todoId);
       axios.delete(`http://localhost:3000/api/todos/${todoId}`).then(({ data }) => {
         // 処理
+        commit('initTargetTodo', data);
+        console.log(data);
+        commit('getTodos', data.todos);
       }).catch((err) => {
         // 処理
+        commit('showError', err.response);
       });
       // 必要があれば処理
     },

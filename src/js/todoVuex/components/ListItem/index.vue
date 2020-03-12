@@ -31,6 +31,7 @@
         <button
           class="todo__item__btn__delete"
           type="button"
+          @click="deleteTodo(todo.id)"
         >
           削除
         </button>
@@ -55,6 +56,9 @@ export default {
     },
     showEditor: function(todo) {
       this.$store.dispatch('showEditor', todo);
+    },
+    deleteTodo: function(todoId) {
+      this.$store.dispatch('deleteTodo', todoId);
     },
   },
 };

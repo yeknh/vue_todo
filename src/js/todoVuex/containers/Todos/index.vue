@@ -1,16 +1,20 @@
 <template lang="html">
   <app-wrapper>
+    <app-navi />
     <app-register v-if="todoFilter !== 'completedTodos'" />
-    <app-error-message />
+    <app-error-message v-else />
     <template v-slot:todos>
       <app-list v-if="todos.length" :todos="todos" />
-      <app-empty-message />
+      <app-empty-message v-else />
     </template>
   </app-wrapper>
 </template>
 
 <script>
+import axios from 'axios';
+
 import Wrapper from 'TodoVuexDir/components/Wrapper';
+import Navi from 'TodoVuexDir/components/Navi'
 import { ErrorMessage, EmptyMessage } from 'TodoVuexDir/components/Message';
 import Register from 'TodoVuexDir/components/Register';
 import List from 'TodoVuexDir/components/List';
@@ -18,6 +22,7 @@ import List from 'TodoVuexDir/components/List';
 export default {
   components: {
     appWrapper: Wrapper,
+    appNavi: Navi,
     appErrorMessage: ErrorMessage,
     appEmptyMessage: EmptyMessage,
     appList: List,
@@ -39,7 +44,7 @@ export default {
   },
   watch: {
     todos: function(todos) {
-      if (!todos.length) this.$store.dispatch('setEmptyMessage', this.todoFilter);
+      if (!todos.length) this.$store.dispatch('setEmptyMessage', this.todoFilter); //dispatch('コールしたいアクション名',渡したいパラメータ)
     },
     $route: function(to) {
       this.$store.dispatch('setTodoFilter', to.name);
@@ -48,6 +53,6 @@ export default {
   created: function() {
     this.$store.dispatch('getTodos');
     this.$store.dispatch('setTodoFilter', this.$route.name);
-  },
+  }
 };
 </script>

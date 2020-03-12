@@ -32,7 +32,7 @@ const config = {
     hot: true,
     port: 8080,
     contentBase: dist,
-    historyApiFallback: true,
+    historyApiFallback: true, //すべてのURLのリクエストに対してpublic/index.htmlを返す指定　サーバー側の指定
   },
   entry: {
     index: `${src}/js/index.js`

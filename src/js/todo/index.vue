@@ -6,8 +6,8 @@
       </header>
 
       <main class="main">
-        <form 
-          class="register" 
+        <form
+          class="register"
           @submit.prevent="targetTodo.id ? editTodo() : addTodo()"
         >
           <div class="register__input">
@@ -49,15 +49,15 @@
         <div class="todos">
           <template v-if="todos.length">
             <ul class="todos__list">
-              <li 
-                v-for="todo in todos" 
+              <li
+                v-for="todo in todos"
                 :key="todo.id"
                 :class="todo.completed ? 'is-completed' : ''"
               >
                 <div class="todos__inner">
                   <div class="todos__completed">
-                    <button 
-                      class="todos__completed__btn" 
+                    <button
+                      class="todos__completed__btn"
                       type="button"
                       @click="changeCompleted(todo)"
                     >
@@ -74,15 +74,15 @@
                     <p class="todos__desc__detail">{{ todo.detail }}</p>
                   </div>
                   <div class="todos__btn">
-                    <button 
-                      class="todos__btn__edit" 
+                    <button
+                      class="todos__btn__edit"
                       type="button"
                       @click="showEditor(todo)"
                     >
                       編集
                     </button>
-                    <button 
-                      class="todos__btn__delete" 
+                    <button
+                      class="todos__btn__delete"
                       type="button"
                       @click="deleteTodo(todo.id)"
                     >
@@ -198,7 +198,7 @@ export default {
         this.targetTodo = this.initTargetTodo();
         return;
       }
-      
+
       axios.patch(`http://localhost:3000/api/todos/${this.targetTodo.id}`, {
         title: this.targetTodo.title,
         detail: this.targetTodo.detail,

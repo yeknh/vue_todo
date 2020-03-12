@@ -2,7 +2,7 @@ import Todos from 'TodoRouterDir/containers/Todos';
 
 const routes = [
   {
-    name: 'allTodos',
+    name: 'allTodos',　//URLの代わりに名前を指定しても動く、ニックネーム、わかりやすい
     path: '/',
     component: Todos,
   },

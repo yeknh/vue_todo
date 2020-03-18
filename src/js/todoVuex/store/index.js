@@ -47,11 +47,11 @@ const store = new Vuex.Store({
       };
     },
     hideError(state) {
-      state.errorMessage = 'エラーが起きました。';
+      state.errorMessage = '';
     },
     showError(state, payload) {
       if (payload) {
-        const errorMessage = payload.data;
+        state.errorMessage = payload.data;
       } else {
         state.errorMessage = 'ネットに接続がされていない、もしくはサーバーとの接続がされていません。ご確認ください。';
       }
@@ -106,6 +106,7 @@ const store = new Vuex.Store({
       });
       axios.post('http://localhost:3000/api/todos/', postTodo).then(({ data }) => {
         commit('addTodo', data);
+        commit('hideError');
       }).catch((err) => {
         commit('showError', err.response);
       });
@@ -117,6 +118,7 @@ const store = new Vuex.Store({
         completed: !targetTodo.completed,
       }).then(({ data }) => {
         commit('editTodo', data);
+        commit('hideError');
       }).catch((err) => {
         commit('showError', err.response);
       });
@@ -139,6 +141,7 @@ const store = new Vuex.Store({
         detail: state.targetTodo.detail,
       }).then(({ data }) => {
         commit('editTodo', data);
+        commit('hideError');
       }).catch((err) => {
         commit('showError', err.response);
       });
@@ -146,16 +149,17 @@ const store = new Vuex.Store({
     },
     deleteTodo({ commit }, todoId) {
       console.log(todoId);
-      axios.delete(`http://localhost:3000/api/todos/${todoId}`).then(({ data }) => {
-        // 処理
-        commit('initTargetTodo', data);
-        console.log(data);
-        commit('getTodos', data.todos);
-      }).catch((err) => {
-        // 処理
-        commit('showError', err.response);
+      return new Promise((resolve, reject) => {
+        axios.delete(`http://localhost:3000/api/todos/${todoId}`).then(({ data }) => {
+            commit('initTargetTodo', data);
+            console.log(data);
+            commit('hideError');
+            resolve();
+          // commit('getTodos', data.todos);
+        }).catch((err) => {
+          commit('showError', err.response);
+        });
       });
-      // 必要があれば処理
     },
   },
 });
